@@ -2,7 +2,7 @@ include theos/makefiles/common.mk
 
 LDFLAGS += -F. -framework Cycript -framework JavaScriptCore -framework Security -current_version 1.0 -compatibility_version 1.0 -framework UIKit -framework CFNetwork
 
-ARCHS = armv7 arm64
+ARCHS = arm64
 
 TWEAK_NAME = SnapchatReloaded
 SnapchatReloaded_FILES = Tweak.xm fishhook/fishhook.c
