@@ -15,9 +15,16 @@ jobs:
         run: |
           git clone https://github.com/BishopFox/theos-jailed.git theos
 
+      - name: Install iPhoneOS SDK
+        run: |
+          git clone --depth 1 https://github.com/theos/sdks.git theos-sdks
+          mkdir -p theos/sdks
+          cp -R theos-sdks/iPhoneOS16.5.sdk theos/sdks/
+
       - name: Build SnapchatReloaded
         run: |
-          make package
+          make clean
+          make package SDKVERSION=16.5
 
       - name: Show generated files
         if: always()
@@ -29,4 +36,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SnapchatReloaded-Build
-          path: packages/
+          path: |
+            packages/
+            obj/
