@@ -1,0 +1,32 @@
+name: Build SnapchatReloaded
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout SnapchatReloaded
+        uses: actions/checkout@v4
+
+      - name: Download theos-jailed
+        run: |
+          git clone https://github.com/BishopFox/theos-jailed.git theos
+
+      - name: Build SnapchatReloaded
+        run: |
+          make package
+
+      - name: Show generated files
+        if: always()
+        run: |
+          find . -type f | sort
+
+      - name: Upload build
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SnapchatReloaded-Build
+          path: packages/
