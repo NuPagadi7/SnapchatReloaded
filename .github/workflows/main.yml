@@ -11,6 +11,16 @@ jobs:
       - name: Checkout SnapchatReloaded
         uses: actions/checkout@v4
 
+      - name: Setup compatible Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.34"
+
+      - name: Check Perl version
+        run: |
+          which perl
+          perl -v
+
       - name: Download theos-jailed
         run: |
           git clone https://github.com/BishopFox/theos-jailed.git theos
