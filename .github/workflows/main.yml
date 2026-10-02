@@ -1,4 +1,4 @@
-name: Diagnose SnapchatReloaded
+name: Build SnapchatReloaded
 
 on:
   workflow_dispatch:
@@ -15,10 +15,29 @@ jobs:
         run: |
           git clone https://github.com/BishopFox/theos-jailed.git theos
 
-      - name: Show problematic Perl code
+      - name: Patch old Theos Perl code
         run: |
-          echo "===== aliased.pm lines 30-55 ====="
-          nl -ba theos/bin/lib/aliased.pm | sed -n '30,55p'
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("theos/bin/lib/aliased.pm")
+          text = p.read_text()
+
+          old = "sub () { $package }"
+          new = "sub { $package }"
+
+          if old not in text:
+              print("ERROR: Expected code was not found")
+              raise SystemExit(1)
+
+          text = text.replace(old, new)
+          p.write_text(text)
+
+          print("Patch successful!")
+          PY
+
+          echo "===== Patched line ====="
+          nl -ba theos/bin/lib/aliased.pm | sed -n '38,45p'
 
       - name: Install iPhoneOS SDK
         run: |
@@ -39,3 +58,12 @@ jobs:
         if: always()
         run: |
           find . -type f | sort
+
+      - name: Upload build
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SnapchatReloaded-Build
+          path: |
+            packages/
+            obj/
