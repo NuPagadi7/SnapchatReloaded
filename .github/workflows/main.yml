@@ -11,16 +11,6 @@ jobs:
       - name: Checkout SnapchatReloaded
         uses: actions/checkout@v4
 
-      - name: Setup compatible Perl
-        uses: shogo82148/actions-setup-perl@v1
-        with:
-          perl-version: "5.34"
-
-      - name: Check Perl version
-        run: |
-          which perl
-          perl -v
-
       - name: Download theos-jailed
         run: |
           git clone https://github.com/BishopFox/theos-jailed.git theos
@@ -34,6 +24,26 @@ jobs:
       - name: Install dpkg
         run: |
           brew install dpkg
+
+      - name: Patch old Theos Perl code
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("theos/bin/lib/aliased.pm")
+          text = p.read_text()
+
+          old = "sub () { $alias }"
+          new = "sub { $alias }"
+
+          if old not in text:
+              print("Expected aliased.pm code not found.")
+              print(text)
+              raise SystemExit(1)
+
+          p.write_text(text.replace(old, new))
+          print("Patched:", p)
+          PY
 
       - name: Build SnapchatReloaded
         run: |
