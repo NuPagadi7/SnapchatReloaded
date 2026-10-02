@@ -21,6 +21,10 @@ jobs:
           mkdir -p theos/sdks
           cp -R theos-sdks/iPhoneOS16.5.sdk theos/sdks/
 
+      - name: Install dpkg
+        run: |
+          brew install dpkg
+
       - name: Build SnapchatReloaded
         run: |
           make clean
