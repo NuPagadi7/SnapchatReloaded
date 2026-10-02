@@ -30,14 +30,9 @@ jobs:
               print("ERROR: Expected code was not found")
               raise SystemExit(1)
 
-          text = text.replace(old, new)
-          p.write_text(text)
-
-          print("Patch successful!")
+          p.write_text(text.replace(old, new))
+          print("Perl patch successful!")
           PY
-
-          echo "===== Patched line ====="
-          nl -ba theos/bin/lib/aliased.pm | sed -n '38,45p'
 
       - name: Install iPhoneOS SDK
         run: |
@@ -52,7 +47,10 @@ jobs:
       - name: Build SnapchatReloaded
         run: |
           make clean
-          make package SDKVERSION=16.5
+          make package \
+            ARCHS=arm64 \
+            SDKVERSION=16.5 \
+            TARGET=iphone:clang:16.5:12.0
 
       - name: Show generated files
         if: always()
